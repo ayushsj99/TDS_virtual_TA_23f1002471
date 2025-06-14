@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+/discourse_md
+/discourse_json
+/tds_pages_md
+/.env
+/project-tds-virtual-ta-promptfoo.yaml
+/project-tds-virtual-ta-q1.webp
