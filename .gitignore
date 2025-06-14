@@ -14,3 +14,7 @@ wheels/
 /.env
 /project-tds-virtual-ta-promptfoo.yaml
 /project-tds-virtual-ta-q1.webp
+/promptfoo-errors.log
+/pyproject.toml
+/uv.lock
+/.python-version
