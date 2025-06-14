@@ -9,7 +9,7 @@ from markdownify import markdownify as md
 from playwright.sync_api import sync_playwright
 from PIL import Image
 from dotenv import load_dotenv
-from google.generativeai import genai
+from google import genai
 
 BASE_URL = "https://tds.s-anand.net/#/2025-01/"
 BASE_ORIGIN = "https://tds.s-anand.net"
