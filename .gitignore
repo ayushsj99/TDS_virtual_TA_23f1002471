@@ -18,3 +18,14 @@ wheels/
 /pyproject.toml
 /uv.lock
 /.python-version
+/chunker.py
+/combined_chunks_intelligently.jsonl
+/combined_chunks.jsonl
+/chunk_embeddings_openai_intelligent.npz
+/chunk_embeddings.npz
+/checkchunks.py
+/readddd.text
+/old_retrival.py
+/old_ignored
+/test
+
