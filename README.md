@@ -10,7 +10,6 @@ A powerful, fast, and private **Question Answering API** for IIT Madras’ *Tool
 ## 📦 Features
 
 - 🔍 Retrieval-Augmented Generation (RAG) using top-10 relevant chunks
-- 🧠 Gemini-powered answer generation from extracted context
 - 🖼️ Accepts **base64-encoded images** to enhance question context
 - 📘 Clean, relevant source references for traceability
 - ⚡ Fast and optimized for deployment on Hugging Face or Railway
@@ -23,22 +22,18 @@ A powerful, fast, and private **Question Answering API** for IIT Madras’ *Tool
 
 This document outlines the **step-by-step data preparation pipeline** required to run the TDS Virtual Teaching Assistant. Before launching the API, you must generate the embedding vectors from raw course content using the following three scripts.
 
-graph TD
-    A[🗂️ Raw Discourse Markdown Files] --> B[🔗 qa_combiner.py<br/>Combine Q&A Pairs]
-    B --> C[✂️ chunker_qa_pairs.py<br/>Chunk Long Answers]
-    C --> D[🔮 embedding_qa_style.py<br/>Generate Embeddings]
-    D --> E[📦 chunk_embeddings_chunkedqa.npz]
+**📊 RAG Embedding Pipeline**
 
-    E --> F[🚀 FastAPI App (main.py)]
-    F --> G[🧠 Gemini + RAG Response]
+1. 🗂️ Raw Markdown Files  
+   ⬇  
+2. 🔗 `qa_combiner.py` – Combine Q&A  
+   ⬇  
+3. ✂️ `chunker_qa_pairs.py` – Chunk Long Answers  
+   ⬇  
+4. 🔮 `embedding_qa_style.py` – Generate Embeddings  
+   ⬇  
+5. 📦 `chunk_embeddings_chunkedqa.npz`  
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style C fill:#bbf,stroke:#333,stroke-width:2px
-    style D fill:#bbf,stroke:#333,stroke-width:2px
-    style E fill:#cfc,stroke:#333,stroke-width:2px
-    style F fill:#fc9,stroke:#333,stroke-width:2px
-    style G fill:#ffc,stroke:#333,stroke-width:2px
 
 ## 📡 API Usage
 
