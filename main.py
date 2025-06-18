@@ -24,7 +24,6 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -45,6 +44,7 @@ class QARequest(BaseModel):
 
 # ---------- Embedding with AI Proxy ----------
 AIPROXY_URL = "https://aiproxy.sanand.workers.dev/openai/v1/embeddings"
+AIPROXY_CHAT_URL = "https://aiproxy.sanand.workers.dev/openai/v1/chat/completions"
 AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN")
 
 def embed_with_aiproxy(text: str) -> list[float]:
@@ -71,6 +71,65 @@ def describe_image(image_base64: str) -> str:
         contents=[img, "Summarize the key visual details of this image in 1–4 sentences. Focus on text, objects, layout."]
     )
     return response.text.strip()
+
+# ---------- AI Proxy Answer Generation ----------
+def ask_openai_proxy(question: str, contexts: list[dict]) -> dict:
+    context_text = "\n\n".join([
+        f"[{i+1}] {item['text']}\nURL: {item['url']}"
+        for i, item in enumerate(contexts)
+    ])
+
+    prompt = f"""
+You are an expert teaching assistant. Using ONLY the information from the context below, answer the question by going through the material step by step and by reasoning and logic, answer as clearly, concisely, and accurately as possible. Do not make assumptions.
+
+Check if the content has the accurate answer, If the answer is not in the context, reply: "The answer is not available in the provided materials."
+
+Always include direct 1 to 2 most relevant links to relevant sections in the source material using the provided URLs.
+
+Question:
+{question}
+
+Context:
+{context_text}
+
+Respond strictly in the following JSON format:
+enter all links in the links array, and use the text as the link text.
+and entry the answer in the answer field.
+
+{{
+  "answer": "...",
+  "links": [
+    {{ "url": "https://...", "text": "..." }},
+    ...
+  ]
+}}
+"""
+
+    headers = {
+        "Authorization": f"Bearer {AIPROXY_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {"role": "user", "content": prompt}
+        ]
+    }
+
+    res = requests.post(AIPROXY_CHAT_URL, headers=headers, json=payload)
+    res.raise_for_status()
+    raw_text = res.json()["choices"][0]["message"]["content"]
+
+    try:
+        clean_text = re.sub(r"^```json|```$", "", raw_text.strip(), flags=re.MULTILINE).strip()
+        parsed = json.loads(clean_text)
+        if isinstance(parsed, dict) and "answer" in parsed:
+            return parsed
+    except Exception:
+        pass
+
+    return {"answer": raw_text, "links": []}
 
 
 # ---------- Gemini Answer Generation ----------
@@ -159,8 +218,8 @@ def get_answer(request: QARequest):
         # print(f"Cosine similarities: {cosine_similarities[top_indices]}")
         
 
-        # Step 5: Ask Gemini
-        result = ask_gemini(request.question, top_chunks)
+        # Step 5: Ask OpenAI Proxy
+        result = ask_openai_proxy(request.question, top_chunks)
         return result
 
     except Exception as e:
@@ -169,5 +228,5 @@ def get_answer(request: QARequest):
 
 # ---------- Run Locally ----------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 7860))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
