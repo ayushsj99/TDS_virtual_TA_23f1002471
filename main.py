@@ -224,6 +224,11 @@ def get_answer(request: QARequest):
 
     except Exception as e:
         return {"error": str(e)}
+    
+@app.get("/")
+def read_root():
+    return {"message": "TDS Virtual TA is running."}
+
 
 
 # ---------- Run Locally ----------
