@@ -1,0 +1,21 @@
+name: Deploy to Hugging Face
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repo
+        uses: actions/checkout@v3
+
+      - name: Push to Hugging Face
+        run: |
+          git config --global user.name "ayushsj99"
+          git config --global user.email "ayushsjadhav99@email.com"
+
+          git remote add hf https://ayushjadhav:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/ayushjadhav/TDS_Virtual_TA_23f1002471
+          git push hf main --force
