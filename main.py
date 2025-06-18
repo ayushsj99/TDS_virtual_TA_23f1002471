@@ -227,7 +227,7 @@ def get_answer(request: QARequest):
     
 @app.get("/")
 def read_root():
-    return {"message": "TDS Virtual TA is running."}
+    return {"message": "TDS Virtual TA is running. Use /qa endpoint to ask questions."}
 
 
 
